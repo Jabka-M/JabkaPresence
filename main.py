@@ -143,10 +143,19 @@ class App(pypresence.Presence):
                             if self.showCurrent:
                                 self.updateCurrentWindow()
                                 
+                            else:
+                                self.clear()
+                                
+                    else:
+                        self.clear()
+                                
             elif self.showWikipedia:
                 if not self.updateWikipedia():
                     if self.showCurrent:
                         self.updateCurrentWindow()
+                       
+                    else:
+                        self.clear()
                         
             elif self.showCurrent:
                 self.updateCurrentWindow()
