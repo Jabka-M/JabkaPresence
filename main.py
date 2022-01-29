@@ -136,7 +136,7 @@ class App(pypresence.Presence):
 
     def mainloop(self):
         while True:
-            if self.showYouTube:
+            if self.showYoutube:
                 if not self.updateYouTube():
                     if self.showWikipedia:
                         if not self.updateWikipedia():
