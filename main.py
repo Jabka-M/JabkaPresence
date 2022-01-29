@@ -136,19 +136,9 @@ class App(pypresence.Presence):
 
     def mainloop(self):
         while True:
-            if (self.showCurrent and self.showYoutube) or (self.showCurrent and self.showWikipedia) or (self.showYoutube and self.showWikipedia):
-                if not self.updateYouTube():
-                    if not self.updateWikipedia():
-                        self.updateCurrentWindow()
-
-            elif self.showCurrent:
-                self.updateCurrentWindow()
-
-            elif self.showYoutube:
-                self.updateYouTube()
-
-            elif self.showWikipedia:
-                self.updateWikipedia()
+            if not self.updateYouTube():
+                if not self.updateWikipedia():
+                    self.updateCurrentWindow()
 
 
 try:
