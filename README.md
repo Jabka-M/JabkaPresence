@@ -10,7 +10,7 @@ git clone https://github.com/Jabka-M/JabkaPresence.git
 
 ### Install dependencies
 ```
-pip install pyautogui pypresence
+pip install pypresence
 ```
 
 ### Setup
@@ -21,5 +21,9 @@ You can change text and images of presence by editing config.ini
 
 ### Start
 ```
-python main.py
+Linux:
+python3 main.py
+
+Windows:
+py main.py
 ```
