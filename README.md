@@ -14,7 +14,7 @@ pip install pypresence
 ```
 
 ### Setup
-Replace your_app_id in main.py (at end of file) to your id (read comment)
+Replace your_app_id in main.py (at end of file) to your id
 
 ### Edit config
 You can change text and images of presence by editing config.ini
