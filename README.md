@@ -1,4 +1,4 @@
-# JabkaPresence
+# JabkaPresence v2
 ### Discord Presence with buttons and YouTube integration
 
 ## How to use:
