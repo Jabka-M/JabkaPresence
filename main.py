@@ -41,7 +41,7 @@ class App(pypresence.Presence):
         return None
 
     def findPattern(self, pattern, string):
-        return (result := re.compile(pattern.replace("?", ".")).search(string)) and result.groups() or False
+        return (result := re.compile(pattern).search(string)) and result.groups() or False
 
     def buildButtons(self):
             buttons = []
@@ -89,13 +89,20 @@ class App(pypresence.Presence):
         if self.blacklist.check(jutsu):
             return False
         
-        result = self.findPattern("Смотреть (?*) ([\d]+ серия|[\d]+ фильм) на", jutsu)
+        result = self.findPattern("Смотреть (.*) ([\d]+ сезон) ([\d]+ серия|[\d]+ фильм) на", jutsu)
         if not result:
-            return False
+            result = self.findPattern("Смотреть (.*) ([\d]+ серия|[\d]+ фильм) на", jutsu)
+            if not result:
+                return False
 
-        anime, episode = result
         buttons = self.buildButtons()
-        self.update(details="Смотрит аниме", state=f"{anime} {episode}", large_image=self.jutsuLargeImage, large_text=self.jutsuLargeImageText, small_image=self.jutsuSmallImage, small_text=self.jutsuSmallImageText, buttons=buttons, instance=False)
+        if len(result) == 2:
+            anime, episode = result
+            self.update(details="Смотрит аниме", state=f"{anime} {episode}", large_image=self.jutsuLargeImage, large_text=self.jutsuLargeImageText, small_image=self.jutsuSmallImage, small_text=self.jutsuSmallImageText, buttons=buttons, instance=False)
+        elif len(result) == 3:
+            anime, season, episode = result
+            self.update(details="Смотрит аниме", state=f"{anime} {season} {episode}", large_image=self.jutsuLargeImage, large_text=self.jutsuLargeImageText, small_image=self.jutsuSmallImage, small_text=self.jutsuSmallImageText, buttons=buttons, instance=False)
+
         self.lastActivity = jutsu
         return True
 
@@ -157,7 +164,7 @@ class App(pypresence.Presence):
         self.lastActivity = currentWindow
 
     def loadConfig(self, filename):
-        self.config.read(filename)
+        self.config.read(filename, encoding="UTF-8")
         self.blacklist = Blacklist(blacklist=([i.strip() for i in self.config.get("PRIVACY", "blacklist").split(";") if i != ""] or []), strict=(self.config.getboolean("PRIVACY", "strict") or False))
         self.showJutsu = self.config.getboolean("MAIN", "jutsu") or False
         self.showYoutube = self.config.getboolean("MAIN", "youtube") or False
@@ -196,7 +203,7 @@ class App(pypresence.Presence):
 
 try:
     print("Creating app...")
-    app = App(your_app_id)
+    app = App(901516274427920464)
     print("Connecting...")
     app.connect()
     print("Loading config...")
