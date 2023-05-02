@@ -52,6 +52,32 @@ class App(pypresence.Presence):
             buttons = buttons or None
             return buttons
 
+    def updateAniu(self, aniu=None):
+        if not self.showAniu:
+            return False
+
+        if not aniu:
+            aniu = self._getWindowByName("- Google Chrome")
+
+        if not aniu:
+            return False
+
+        elif aniu == self.lastActivity:
+            return True
+
+        if self.blacklist.check(aniu):
+            return False
+
+        result = self.findPattern(r"Идёт просмотр, осталось (.*)", aniu)
+        if not result:
+            return False
+
+        left = result[0]
+        buttons = self.buildButtons()
+        self.update(details="Смотрит аниме на Aniu", state=f"Осталось: {left}", large_image=self.aniuLargeImage, large_text=self.aniuLargeImageText, small_image=self.aniuSmallImage, small_text=self.aniuSmallImageText, buttons=buttons, instance=False)
+        self.lastActivity = aniu
+        return True
+
     def updateWikipedia(self, wikipedia=None):
         if not self.showWikipedia:
             return False
@@ -158,6 +184,9 @@ class App(pypresence.Presence):
 
         elif "— Википедия - Google Chrome" in currentWindow or "- Wikipedia - Google Chrome" in currentWindow:
             return self.updateWikipedia(currentWindow.replace("- Wikipedia - Google Chrome", "").replace("— Википедия - Google Chrome", "").strip())
+        
+        elif "Идёт просмотр, осталось" in currentWindow:
+            return self.updateAniu(currentWindow.replace("- Google Chrome", "").strip())
 
         buttons = self.buildButtons()
         self.update(details="Сейчас в", state=currentWindow, large_image=self.currentLargeImage, large_text=self.currentLargeImageText, small_image=self.currentSmallImage, small_text=self.currentSmallImageText, buttons=buttons, instance=False)
@@ -165,45 +194,50 @@ class App(pypresence.Presence):
 
     def loadConfig(self, filename):
         self.config.read(filename, encoding="UTF-8")
-        self.blacklist = Blacklist(blacklist=([i.strip() for i in self.config.get("PRIVACY", "blacklist").split(";") if i != ""] or []), strict=(self.config.getboolean("PRIVACY", "strict") or False))
-        self.showJutsu = self.config.getboolean("MAIN", "jutsu") or False
-        self.showYoutube = self.config.getboolean("MAIN", "youtube") or False
-        self.showCurrent = self.config.getboolean("MAIN", "current") or False
-        self.showWikipedia = self.config.getboolean("MAIN", "wikipedia") or False
-        self.jutsuLargeImage = self.config.get("JUTSU", "large-image") or None
-        self.jutsuSmallImage = self.config.get("JUTSU", "small-image") or None
-        self.jutsuLargeImageText = self.config.get("JUTSU", "large-image-text") or None
-        self.jutsuSmallImageText = self.config.get("JUTSU", "small-image-text") or None
-        self.youtubeLargeImage = self.config.get("YOUTUBE", "large-image") or None
-        self.youtubeSmallImage = self.config.get("YOUTUBE", "small-image") or None
-        self.youtubeLargeImageText = self.config.get("YOUTUBE", "large-image-text") or None
-        self.youtubeSmallImageText = self.config.get("YOUTUBE", "small-image-text") or None
-        self.currentLargeImage = self.config.get("CURRENT", "large-image") or None
-        self.currentSmallImage = self.config.get("CURRENT", "small-image") or None
-        self.currentLargeImageText = self.config.get("CURRENT", "large-image-text") or None
-        self.currentSmallImageText = self.config.get("CURRENT", "small-image-text") or None
-        self.wikipediaLargeImage = self.config.get("WIKIPEDIA", "large-image") or None
-        self.wikipediaSmallImage = self.config.get("WIKIPEDIA", "small-image") or None
-        self.wikipediaLargeImageText = self.config.get("WIKIPEDIA", "large-image-text") or None
-        self.wikipediaSmallImageText = self.config.get("WIKIPEDIA", "small-image-text") or None
-        self.button1Text = self.config.get("BUTTONS", "button-1-text") or None
-        self.button1URL = self.config.get("BUTTONS", "button-1-url") or None
-        self.button2Text = self.config.get("BUTTONS", "button-2-text") or None
-        self.button2URL = self.config.get("BUTTONS", "button-2-url") or None
+        self.blacklist = Blacklist(blacklist=([i.strip() for i in self.config.get("PRIVACY", "privacy.blacklist").split(";") if i != ""] or []), strict=(self.config.getboolean("PRIVACY", "privacy.strict") or False))
+        self.showJutsu = self.config.getboolean("MAIN", "jutsu.show") or False
+        self.showYoutube = self.config.getboolean("MAIN", "youtube.show") or False
+        self.showCurrent = self.config.getboolean("MAIN", "current.show") or False
+        self.showWikipedia = self.config.getboolean("MAIN", "wikipedia.show") or False
+        self.showAniu = self.config.getboolean("MAIN", "aniu.show") or False
+        self.jutsuLargeImage = self.config.get("JUTSU", "jutsu.large") or None
+        self.jutsuSmallImage = self.config.get("JUTSU", "jutsu.small") or None
+        self.jutsuLargeImageText = self.config.get("JUTSU", "jutsu.large-text") or None
+        self.jutsuSmallImageText = self.config.get("JUTSU", "jutsu.small-text") or None
+        self.aniuLargeImage = self.config.get("ANIU", "aniu.large") or None
+        self.aniuSmallImage = self.config.get("ANIU", "aniu.small") or None
+        self.aniuLargeImageText = self.config.get("ANIU", "aniu.large-text") or None
+        self.aniuSmallImageText = self.config.get("ANIU", "aniu.small-text") or None
+        self.youtubeLargeImage = self.config.get("YOUTUBE", "youtube.large") or None
+        self.youtubeSmallImage = self.config.get("YOUTUBE", "youtube.small") or None
+        self.youtubeLargeImageText = self.config.get("YOUTUBE", "youtube.large-text") or None
+        self.youtubeSmallImageText = self.config.get("YOUTUBE", "youtube.small-text") or None
+        self.currentLargeImage = self.config.get("CURRENT", "current.large") or None
+        self.currentSmallImage = self.config.get("CURRENT", "current.small") or None
+        self.currentLargeImageText = self.config.get("CURRENT", "current.large-text") or None
+        self.currentSmallImageText = self.config.get("CURRENT", "current.small-text") or None
+        self.wikipediaLargeImage = self.config.get("WIKIPEDIA", "wikipedia.large") or None
+        self.wikipediaSmallImage = self.config.get("WIKIPEDIA", "wikipedia.small") or None
+        self.wikipediaLargeImageText = self.config.get("WIKIPEDIA", "wikipedia.large-text") or None
+        self.wikipediaSmallImageText = self.config.get("WIKIPEDIA", "wikipedia.small-text") or None
+        self.button1Text = self.config.get("BUTTONS", "buttons[0].text") or None
+        self.button1URL = self.config.get("BUTTONS", "buttons[0].url") or None
+        self.button2Text = self.config.get("BUTTONS", "buttons[1].text") or None
+        self.button2URL = self.config.get("BUTTONS", "buttons[1].url") or None
 
     def mainloop(self):
-        print(f"Started with settings:\nJutsu: {self.showJutsu}\nYouTube: {self.showYoutube}\nCurrent: {self.showCurrent}\nWikipedia: {self.showWikipedia}")
+        print(f"Started with settings:\nAniu: {self.showAniu}\nJutsu: {self.showJutsu}\nYouTube: {self.showYoutube}\nCurrent: {self.showCurrent}\nWikipedia: {self.showWikipedia}")
         while True:
             if not self.updateJutsu():
-                if not self.updateYouTube():
-                    if not self.updateWikipedia():
-                        if not self.updateCurrentWindow():
-                            self.clear()
-
+                if not self.updateAniu():
+                    if not self.updateYouTube():
+                        if not self.updateWikipedia():
+                            if not self.updateCurrentWindow():
+                                self.clear()
 
 try:
     print("Creating app...")
-    app = App(901516274427920464)
+    app = App(appID)
     print("Connecting...")
     app.connect()
     print("Loading config...")
