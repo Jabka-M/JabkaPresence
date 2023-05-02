@@ -1,8 +1,8 @@
 # JabkaPresence v3
 ### Discord Presence with buttons and YouTube integration
 
-# Version 3 has some breaking changes (old config won't work on this version)!
-## Make sure you update your config to latest version!
+## Version 3 has some breaking changes (old config won't work on this version)!
+### Make sure you have updated the config to the latest version!
 
 ## How to use:
 
