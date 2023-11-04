@@ -1,4 +1,5 @@
-# JabkaPresence v3
+# JabkaPresence v3 (NOT MAINTAINED)
+## This repository will no longer get updates
 ### Discord Presence with buttons and YouTube integration
 
 ## Version 3 has some breaking changes (old config won't work on this version)!
